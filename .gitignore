@@ -1,0 +1,28 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# next.js
+/.next/
+/out/
+next-env.d.ts
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# local env files
+.env
+.env*.local
+
+# prisma / sqlite (no subas la BD local)
+/prisma/*.db
+/prisma/*.db-journal
+/prisma/migrations/dev.db
+
+# typescript
+*.tsbuildinfo

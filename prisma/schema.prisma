@@ -1,0 +1,122 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ─── NextAuth models ────────────────────────────────────────────────
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ─── App models ─────────────────────────────────────────────────────
+model User {
+  id            String        @id @default(cuid())
+  name          String?
+  email         String?       @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  plan          String        @default("free")
+  createdAt     DateTime      @default(now())
+  accounts      Account[]
+  sessions      Session[]
+  comunidades   Comunidad[]
+  subscription  Subscription?
+}
+
+model Comunidad {
+  id           String        @id @default(cuid())
+  nombre       String
+  direccion    String
+  numViviendas Int           @default(0)
+  cif          String?
+  iban         String?
+  createdAt    DateTime      @default(now())
+  userId       String
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  propietarios Propietario[]
+  documentos   Documento[]
+  chatMensajes ChatMensaje[]
+}
+
+model Propietario {
+  id          String    @id @default(cuid())
+  nombre      String
+  piso        String
+  coeficiente Float
+  email       String?
+  telefono    String?
+  moroso      Boolean   @default(false)
+  comunidadId String
+  comunidad   Comunidad @relation(fields: [comunidadId], references: [id], onDelete: Cascade)
+
+  @@unique([comunidadId, piso])
+}
+
+model Documento {
+  id          String    @id @default(cuid())
+  tipo        String
+  titulo      String
+  inputJson   String
+  contenido   String
+  comunidadId String
+  comunidad   Comunidad @relation(fields: [comunidadId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model ChatMensaje {
+  id          String    @id @default(cuid())
+  rol         String
+  contenido   String
+  comunidadId String
+  comunidad   Comunidad @relation(fields: [comunidadId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+}
+
+model Subscription {
+  id               String    @id @default(cuid())
+  stripeCustomerId String?
+  stripeSubId      String?
+  plan             String    @default("free")
+  status           String    @default("active")
+  currentPeriodEnd DateTime?
+  userId           String    @unique
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  updatedAt        DateTime  @updatedAt
+}

@@ -1,0 +1,35 @@
+services:
+  - type: web
+    name: fincaia
+    runtime: node
+    plan: free
+    buildCommand: npm ci && npx prisma generate && npx prisma db push && npm run build
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: fincaia-db
+          property: connectionString
+      - key: DIRECT_URL
+        fromDatabase:
+          name: fincaia-db
+          property: connectionString
+      - key: NEXTAUTH_URL
+        sync: false   # ponlo manualmente en Render con tu dominio
+      - key: NEXTAUTH_SECRET
+        generateValue: true
+      - key: ANTHROPIC_API_KEY
+        sync: false   # ponlo manualmente en Render
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+
+databases:
+  - name: fincaia-db
+    plan: free
+    databaseName: fincaia
+    user: fincaia
