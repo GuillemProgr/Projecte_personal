@@ -10,26 +10,16 @@ services:
       - key: NODE_ENV
         value: production
       - key: DATABASE_URL
-        fromDatabase:
-          name: fincaia-db
-          property: connectionString
+        sync: false
       - key: DIRECT_URL
-        fromDatabase:
-          name: fincaia-db
-          property: connectionString
+        sync: false
       - key: NEXTAUTH_URL
-        sync: false   # ponlo manualmente en Render con tu dominio
+        sync: false
       - key: NEXTAUTH_SECRET
-        generateValue: true
+        sync: false
       - key: ANTHROPIC_API_KEY
-        sync: false   # ponlo manualmente en Render
+        sync: false
       - key: GOOGLE_CLIENT_ID
         sync: false
       - key: GOOGLE_CLIENT_SECRET
         sync: false
-
-databases:
-  - name: fincaia-db
-    plan: free
-    databaseName: fincaia
-    user: fincaia
