@@ -4,7 +4,7 @@ services:
     runtime: node
     plan: free
     buildCommand: npm ci && npx prisma generate && npx prisma db push && npm run build
-    startCommand: npm start
+    startCommand: npx next start -p $PORT
     healthCheckPath: /
     envVars:
       - key: NODE_ENV
